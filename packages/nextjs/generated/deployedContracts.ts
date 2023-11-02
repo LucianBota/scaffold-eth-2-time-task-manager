@@ -4,15 +4,62 @@ const contracts = {
       chainId: "31337",
       name: "localhost",
       contracts: {
-        YourContract: {
-          address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+        TimeTaskManager: {
+          address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
           abi: [
             {
               inputs: [
                 {
-                  internalType: "address",
-                  name: "_owner",
-                  type: "address",
+                  internalType: "address[]",
+                  name: "leadAddresses",
+                  type: "address[]",
+                },
+                {
+                  internalType: "address[]",
+                  name: "scrumAddresses",
+                  type: "address[]",
+                },
+                {
+                  internalType: "address[]",
+                  name: "devAddresses",
+                  type: "address[]",
+                },
+                {
+                  components: [
+                    {
+                      internalType: "string",
+                      name: "title",
+                      type: "string",
+                    },
+                    {
+                      internalType: "enum TimeTaskManager.TaskStatus",
+                      name: "status",
+                      type: "uint8",
+                    },
+                    {
+                      internalType: "string",
+                      name: "description",
+                      type: "string",
+                    },
+                    {
+                      internalType: "address",
+                      name: "assignedTo",
+                      type: "address",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "dueDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "address",
+                      name: "createdBy",
+                      type: "address",
+                    },
+                  ],
+                  internalType: "struct TimeTaskManager.Task[]",
+                  name: "tasks",
+                  type: "tuple[]",
                 },
               ],
               stateMutability: "nonpayable",
@@ -23,126 +70,235 @@ const contracts = {
               inputs: [
                 {
                   indexed: true,
-                  internalType: "address",
-                  name: "greetingSetter",
-                  type: "address",
-                },
-                {
-                  indexed: false,
-                  internalType: "string",
-                  name: "newGreeting",
-                  type: "string",
-                },
-                {
-                  indexed: false,
-                  internalType: "bool",
-                  name: "premium",
-                  type: "bool",
-                },
-                {
-                  indexed: false,
                   internalType: "uint256",
-                  name: "value",
+                  name: "taskId",
                   type: "uint256",
                 },
               ],
-              name: "GreetingChange",
+              name: "TaskCreated",
               type: "event",
             },
             {
-              inputs: [],
-              name: "greeting",
-              outputs: [
+              anonymous: false,
+              inputs: [
                 {
-                  internalType: "string",
-                  name: "",
-                  type: "string",
+                  indexed: true,
+                  internalType: "uint256",
+                  name: "indexedtaskId",
+                  type: "uint256",
                 },
               ],
-              stateMutability: "view",
-              type: "function",
+              name: "TaskDeleted",
+              type: "event",
             },
             {
-              inputs: [],
-              name: "owner",
-              outputs: [
+              anonymous: false,
+              inputs: [
                 {
-                  internalType: "address",
-                  name: "",
-                  type: "address",
+                  indexed: true,
+                  internalType: "uint256",
+                  name: "taskId",
+                  type: "uint256",
                 },
               ],
-              stateMutability: "view",
-              type: "function",
+              name: "TaskEdited",
+              type: "event",
             },
             {
-              inputs: [],
-              name: "premium",
-              outputs: [
+              anonymous: false,
+              inputs: [
                 {
-                  internalType: "bool",
-                  name: "",
-                  type: "bool",
+                  indexed: true,
+                  internalType: "uint256",
+                  name: "taskId",
+                  type: "uint256",
                 },
               ],
-              stateMutability: "view",
-              type: "function",
+              name: "TaskStatusUpdated",
+              type: "event",
             },
             {
               inputs: [
                 {
                   internalType: "string",
-                  name: "_newGreeting",
+                  name: "title",
                   type: "string",
                 },
-              ],
-              name: "setGreeting",
-              outputs: [],
-              stateMutability: "payable",
-              type: "function",
-            },
-            {
-              inputs: [],
-              name: "totalCounter",
-              outputs: [
                 {
-                  internalType: "uint256",
-                  name: "",
-                  type: "uint256",
+                  internalType: "string",
+                  name: "description",
+                  type: "string",
                 },
-              ],
-              stateMutability: "view",
-              type: "function",
-            },
-            {
-              inputs: [
                 {
                   internalType: "address",
-                  name: "",
+                  name: "assignedTo",
                   type: "address",
                 },
-              ],
-              name: "userGreetingCounter",
-              outputs: [
                 {
                   internalType: "uint256",
-                  name: "",
+                  name: "dueDate",
                   type: "uint256",
                 },
               ],
-              stateMutability: "view",
-              type: "function",
-            },
-            {
-              inputs: [],
-              name: "withdraw",
+              name: "createTask",
               outputs: [],
               stateMutability: "nonpayable",
               type: "function",
             },
             {
-              stateMutability: "payable",
-              type: "receive",
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "taskId",
+                  type: "uint256",
+                },
+              ],
+              name: "deleteTask",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "taskId",
+                  type: "uint256",
+                },
+                {
+                  internalType: "address",
+                  name: "assignedTo",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "dueDate",
+                  type: "uint256",
+                },
+              ],
+              name: "editTask",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "taskId",
+                  type: "uint256",
+                },
+              ],
+              name: "readTask",
+              outputs: [
+                {
+                  internalType: "string",
+                  name: "",
+                  type: "string",
+                },
+                {
+                  internalType: "enum TimeTaskManager.TaskStatus",
+                  name: "",
+                  type: "uint8",
+                },
+                {
+                  internalType: "string",
+                  name: "",
+                  type: "string",
+                },
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              name: "s_isDev",
+              outputs: [
+                {
+                  internalType: "bool",
+                  name: "",
+                  type: "bool",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              name: "s_isLead",
+              outputs: [
+                {
+                  internalType: "bool",
+                  name: "",
+                  type: "bool",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              name: "s_isScrum",
+              outputs: [
+                {
+                  internalType: "bool",
+                  name: "",
+                  type: "bool",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "taskId",
+                  type: "uint256",
+                },
+                {
+                  internalType: "enum TimeTaskManager.TaskStatus",
+                  name: "status",
+                  type: "uint8",
+                },
+              ],
+              name: "updateTaskStatus",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
             },
           ],
         },

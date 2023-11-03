@@ -32,9 +32,9 @@ contract TimeTaskManager {
 	mapping(uint256 => Task) private s_tasks;
 	uint256 private s_taskCount = 0;
 
-	mapping(address => bool) public s_isLead;
-	mapping(address => bool) public s_isScrum;
-	mapping(address => bool) public s_isDev;
+	mapping(address => bool) private s_isLead;
+	mapping(address => bool) private s_isScrum;
+	mapping(address => bool) private s_isDev;
 
 	// Events
 	event TaskDeleted(uint256 indexed indexedtaskId);
@@ -162,5 +162,17 @@ contract TimeTaskManager {
 			task.dueDate,
 			task.createdBy
 		);
+	}
+
+	function getIsLead(address userAddress) public view returns (bool) {
+		return s_isLead[userAddress];
+	}
+
+	function getIsScrum(address userAddress) public view returns (bool) {
+		return s_isScrum[userAddress];
+	}
+
+	function getIsDev(address userAddress) public view returns (bool) {
+		return s_isDev[userAddress];
 	}
 }

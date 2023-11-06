@@ -44,42 +44,46 @@ const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 				<h2 className="text-lg font-semibold mb-4">
 					{task.id ? "Edit" : "Add"} Task
 				</h2>
-				<div
-					className={
-						"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
-					}
-				>
-					<input
-						type="text"
-						value={currentTask.title}
-						onChange={(e) =>
-							setCurrentTask({
-								...currentTask,
-								title: e.target.value,
-							})
-						}
-						className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-						placeholder="Title"
-					/>
-				</div>
-				<div
-					className={
-						"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
-					}
-				>
-					<textarea
-						value={currentTask.description}
-						onChange={(e) =>
-							setCurrentTask({
-								...currentTask,
-								description: e.target.value,
-							})
-						}
-						className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border rounded-none w-full font-medium placeholder:text-accent/50 text-gray-400"
-						placeholder="Description"
-						rows={4}
-					/>
-				</div>
+				{!task.id ? (
+					<>
+						<div
+							className={
+								"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
+							}
+						>
+							<input
+								type="text"
+								value={currentTask.title}
+								onChange={(e) =>
+									setCurrentTask({
+										...currentTask,
+										title: e.target.value,
+									})
+								}
+								className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
+								placeholder="Title"
+							/>
+						</div>
+						<div
+							className={
+								"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
+							}
+						>
+							<textarea
+								value={currentTask.description}
+								onChange={(e) =>
+									setCurrentTask({
+										...currentTask,
+										description: e.target.value,
+									})
+								}
+								className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border rounded-none w-full font-medium placeholder:text-accent/50 text-gray-400"
+								placeholder="Description"
+								rows={4}
+							/>
+						</div>
+					</>
+				) : null}
 				{task.id ? (
 					<div
 						className={
@@ -96,18 +100,9 @@ const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 							}
 							className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
 						>
-							{Object.keys(TaskStatus).map((key) => (
-								<option
-									key={key}
-									value={
-										TaskStatus[
-											key as keyof typeof TaskStatus
-										]
-									}
-								>
-									{key}
-								</option>
-							))}
+							<option value={0}>TODO</option>
+							<option value={1}>DONE</option>
+							<option value={2}>CANCEL</option>
 						</select>
 					</div>
 				) : null}

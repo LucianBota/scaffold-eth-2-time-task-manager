@@ -40,6 +40,7 @@ contract TimeTaskManager {
 
 	// State Variables
 	mapping(uint256 => Task) private s_tasks;
+	uint256 private s_tasksCount = 0;
 	uint256 private s_lastTaskIndex = 0;
 
 	mapping(address => bool) private s_isLead;
@@ -88,6 +89,7 @@ contract TimeTaskManager {
 		for (uint256 i = 0; i < tasks.length; i++) {
 			s_lastTaskIndex++;
 			s_tasks[s_lastTaskIndex] = tasks[i];
+			s_tasksCount++;
 		}
 	}
 
@@ -98,6 +100,8 @@ contract TimeTaskManager {
 		address assignedTo,
 		uint256 dueDate
 	) public onlyLeadOrScrum {
+		require(dueDate > block.timestamp, "Due date must be in the future");
+
 		s_lastTaskIndex++;
 		s_tasks[s_lastTaskIndex] = Task(
 			title,
@@ -107,6 +111,7 @@ contract TimeTaskManager {
 			dueDate,
 			msg.sender
 		);
+		s_tasksCount++;
 		emit TaskCreated(s_lastTaskIndex);
 	}
 
@@ -128,10 +133,12 @@ contract TimeTaskManager {
 		address assignedTo,
 		uint256 dueDate
 	) public onlyLeadOrScrum {
+		require(dueDate > block.timestamp, "Due date must be in the future");
+
 		Task storage task = s_tasks[taskId];
 		require(
-			task.createdBy == msg.sender || s_isScrum[msg.sender],
-			"Only the creator or scrum can edit the task"
+			task.createdBy == msg.sender,
+			"Only the creator can edit the task"
 		);
 		task.assignedTo = assignedTo;
 		task.dueDate = dueDate;
@@ -147,6 +154,7 @@ contract TimeTaskManager {
 			"Only the creator can delete the task"
 		);
 		delete s_tasks[taskId];
+		s_tasksCount--;
 		emit TaskDeleted(taskId);
 	}
 
@@ -176,47 +184,32 @@ contract TimeTaskManager {
 		);
 	}
 
-	function getPaginatedTasks(
-		uint256 page,
-		uint256 pageSize
-	) public view returns (TaskWithId[] memory) {
-		require(page > 0, "Page number must be greater than 0");
-		require(pageSize > 0, "Page size must be greater than 0");
+	function getAllTasks() public view returns (TaskWithId[] memory) {
+		TaskWithId[] memory allTasks = new TaskWithId[](s_tasksCount);
+		uint256 index = 0;
 
-		// Create an array to hold the paginated tasks
-		TaskWithId[] memory paginatedTasks = new TaskWithId[](pageSize);
-
-		// Initialize variables to track the number of tasks found and the current page index
-		uint256 tasksFound = 0;
-		uint256 currentPageIndex = 0;
-
-		// Iterate through tasks in reverse order to find the tasks for the requested page
 		for (uint256 i = s_lastTaskIndex; i > 0; i--) {
-			if (tasksFound == pageSize) {
-				// If we have found enough tasks for the page, exit the loop
-				break;
-			}
-
-			// Check if the task at index i exists (not deleted)
-			if (bytes(s_tasks[i].title).length != 0) {
-				// This task exists, so add it to the paginatedTasks array
-				paginatedTasks[currentPageIndex] = TaskWithId({
-					id: i,
-					title: s_tasks[i].title,
-					status: s_tasks[i].status,
-					description: s_tasks[i].description,
-					assignedTo: s_tasks[i].assignedTo,
-					dueDate: s_tasks[i].dueDate,
-					createdBy: s_tasks[i].createdBy
-				});
-				tasksFound++;
-				currentPageIndex++;
-			}
+			Task memory task = s_tasks[i];
+			allTasks[index] = TaskWithId(
+				i,
+				task.title,
+				task.status,
+				task.description,
+				task.assignedTo,
+				task.dueDate,
+				task.createdBy
+			);
+			index++;
 		}
-		return paginatedTasks;
+
+		return allTasks;
 	}
 
-	function getNewTaskIndex() public view returns (uint256) {
+	function getTasksCount() public view returns (uint256) {
+		return s_tasksCount;
+	}
+
+	function getLastTaskIndex() public view returns (uint256) {
 		return s_lastTaskIndex;
 	}
 

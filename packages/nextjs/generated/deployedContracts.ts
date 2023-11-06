@@ -5,7 +5,7 @@ const contracts = {
       name: "localhost",
       contracts: {
         TimeTaskManager: {
-          address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+          address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
           abi: [
             {
               inputs: [
@@ -182,6 +182,56 @@ const contracts = {
               type: "function",
             },
             {
+              inputs: [],
+              name: "getAllTasks",
+              outputs: [
+                {
+                  components: [
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "title",
+                      type: "string",
+                    },
+                    {
+                      internalType: "enum TimeTaskManager.TaskStatus",
+                      name: "status",
+                      type: "uint8",
+                    },
+                    {
+                      internalType: "string",
+                      name: "description",
+                      type: "string",
+                    },
+                    {
+                      internalType: "address",
+                      name: "assignedTo",
+                      type: "address",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "dueDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "address",
+                      name: "createdBy",
+                      type: "address",
+                    },
+                  ],
+                  internalType: "struct TimeTaskManager.TaskWithId[]",
+                  name: "",
+                  type: "tuple[]",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
               inputs: [
                 {
                   internalType: "address",
@@ -240,73 +290,12 @@ const contracts = {
             },
             {
               inputs: [],
-              name: "getNewTaskIndex",
+              name: "getLastTaskIndex",
               outputs: [
                 {
                   internalType: "uint256",
                   name: "",
                   type: "uint256",
-                },
-              ],
-              stateMutability: "view",
-              type: "function",
-            },
-            {
-              inputs: [
-                {
-                  internalType: "uint256",
-                  name: "page",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "pageSize",
-                  type: "uint256",
-                },
-              ],
-              name: "getPaginatedTasks",
-              outputs: [
-                {
-                  components: [
-                    {
-                      internalType: "uint256",
-                      name: "id",
-                      type: "uint256",
-                    },
-                    {
-                      internalType: "string",
-                      name: "title",
-                      type: "string",
-                    },
-                    {
-                      internalType: "enum TimeTaskManager.TaskStatus",
-                      name: "status",
-                      type: "uint8",
-                    },
-                    {
-                      internalType: "string",
-                      name: "description",
-                      type: "string",
-                    },
-                    {
-                      internalType: "address",
-                      name: "assignedTo",
-                      type: "address",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "dueDate",
-                      type: "uint256",
-                    },
-                    {
-                      internalType: "address",
-                      name: "createdBy",
-                      type: "address",
-                    },
-                  ],
-                  internalType: "struct TimeTaskManager.TaskWithId[]",
-                  name: "",
-                  type: "tuple[]",
                 },
               ],
               stateMutability: "view",
@@ -351,6 +340,19 @@ const contracts = {
                   internalType: "address",
                   name: "",
                   type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "getTasksCount",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
                 },
               ],
               stateMutability: "view",

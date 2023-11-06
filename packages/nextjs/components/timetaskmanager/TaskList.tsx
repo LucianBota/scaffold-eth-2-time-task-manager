@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import TaskCard from "./TaskCard";
 import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
@@ -12,8 +12,7 @@ const TaskList = () => {
 
 	const { data: tasks } = useScaffoldContractRead({
 		contractName: "TimeTaskManager",
-		functionName: "getPaginatedTasks",
-		args: [1n, 3n],
+		functionName: "getAllTasks",
 	});
 
 	const handleAddClick = () => {
@@ -38,12 +37,11 @@ const TaskList = () => {
 				</button>
 			</div>
 			<div className="grid gap-y-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-				{tasks?.map((task: Task) => {
-					console.log("task", task);
-					return task.id ? (
+				{tasks?.map((task: Task) =>
+					task.id ? (
 						<TaskCard key={task.id.toString()} task={task} />
-					) : null;
-				})}
+					) : null
+				)}
 			</div>
 			{isAddModalOpen && (
 				<AddEditTaskModal

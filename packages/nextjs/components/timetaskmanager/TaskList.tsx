@@ -10,6 +10,12 @@ const TaskList = () => {
 	const [currentDateTimestamp, setCurrentDateTimestamp] =
 		useState<bigint>(0n);
 
+	const { data: tasks } = useScaffoldContractRead({
+		contractName: "TimeTaskManager",
+		functionName: "getPaginatedTasks",
+		args: [1n, 3n],
+	});
+
 	const handleAddClick = () => {
 		const newTimestamp = BigInt(new Date().getTime()) / 1000n;
 		const newDateTimestamp = newTimestamp - (newTimestamp % 3600n);
@@ -21,19 +27,6 @@ const TaskList = () => {
 		setAddModalOpen(false);
 	};
 
-	const handleAddModalSave = (addedTask: Task) => {
-		// Implement logic to save the added task data here.
-		console.log("Added Task:", addedTask);
-		// Close the modal
-		handleAddModalClose();
-	};
-
-	const { data: tasks } = useScaffoldContractRead({
-		contractName: "TimeTaskManager",
-		functionName: "getPaginatedTasks",
-		args: [1n, 3n],
-	});
-
 	return (
 		<div>
 			<div className="flex justify-center mb-10">
@@ -44,15 +37,12 @@ const TaskList = () => {
 					ADD TASK +
 				</button>
 			</div>
-			<div
-				className="grid gap-y-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-				// style={{
-				// 	gridTemplateColumns: "1fr 1fr 1fr",
-				// }}
-			>
-				{tasks?.map((task) => {
+			<div className="grid gap-y-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+				{tasks?.map((task: Task) => {
 					console.log("task", task);
-					return <TaskCard data={task} />;
+					return task.id ? (
+						<TaskCard key={task.id.toString()} task={task} />
+					) : null;
 				})}
 			</div>
 			{isAddModalOpen && (
@@ -66,7 +56,6 @@ const TaskList = () => {
 						title: "",
 					}}
 					onClose={handleAddModalClose}
-					onSave={handleAddModalSave}
 				/>
 			)}
 		</div>

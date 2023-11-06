@@ -1,30 +1,49 @@
 import React, { useState } from "react";
 import { TaskStatus } from "~~/enums/task";
+import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { Task } from "~~/types/timetaskmananger/task";
 import { unixTimestampMillisecondsToIsoString } from "~~/utils/dateTime";
 
 interface AddEditTaskModalProps {
 	task: Task;
 	onClose: () => void;
-	onSave: (editedTask: Task) => void;
 }
 
 const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 	task,
 	onClose,
-	onSave,
 }) => {
-	const [editedTask, setEditedTask] = useState<Task>(task);
+	const [currentTask, setCurrentTask] = useState<Task>(task);
+	const {
+		writeAsync: writeCreateAsync,
+		isLoading: isLoadingCreate,
+		isMining: isMiningCreate,
+	} = useScaffoldContractWrite({
+		contractName: "TimeTaskManager",
+		functionName: "createTask",
+		args: [
+			currentTask.title,
+			currentTask.description,
+			currentTask.assignedTo,
+			currentTask.dueDate,
+		],
+		blockConfirmations: 1,
+		onBlockConfirmation: (txnReceipt) => {
+			console.log("Transaction blockHash", txnReceipt.blockHash);
+		},
+	});
 
-	const handleSave = () => {
-		onSave(editedTask);
+	const handleSave = async () => {
+		await writeCreateAsync();
 		onClose();
 	};
 
 	return (
 		<div className="fixed inset-0 flex bg-[#000000cc] items-center justify-center z-50">
 			<div className="bg-base-100 border-base-300 border shadow-md shadow-secondary p-4 rounded-lg min-w-[300px] max-w-[300px] sm:min-w-[512px] sm:max-w-[512px]">
-				<h2 className="text-lg font-semibold mb-4">Edit Task</h2>
+				<h2 className="text-lg font-semibold mb-4">
+					{task.id ? "Edit" : "Add"} Task
+				</h2>
 				<div
 					className={
 						"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
@@ -32,10 +51,10 @@ const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 				>
 					<input
 						type="text"
-						value={editedTask.title}
+						value={currentTask.title}
 						onChange={(e) =>
-							setEditedTask({
-								...editedTask,
+							setCurrentTask({
+								...currentTask,
 								title: e.target.value,
 							})
 						}
@@ -49,10 +68,10 @@ const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 					}
 				>
 					<textarea
-						value={editedTask.description}
+						value={currentTask.description}
 						onChange={(e) =>
-							setEditedTask({
-								...editedTask,
+							setCurrentTask({
+								...currentTask,
 								description: e.target.value,
 							})
 						}
@@ -61,33 +80,37 @@ const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 						rows={4}
 					/>
 				</div>
-				<div
-					className={
-						"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
-					}
-				>
-					<select
-						value={editedTask.status}
-						onChange={(e) =>
-							setEditedTask({
-								...editedTask,
-								status: Number(e.target.value),
-							})
+				{task.id ? (
+					<div
+						className={
+							"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
 						}
-						className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
 					>
-						{Object.keys(TaskStatus).map((key) => (
-							<option
-								key={key}
-								value={
-									TaskStatus[key as keyof typeof TaskStatus]
-								}
-							>
-								{key}
-							</option>
-						))}
-					</select>
-				</div>
+						<select
+							value={currentTask.status}
+							onChange={(e) =>
+								setCurrentTask({
+									...currentTask,
+									status: Number(e.target.value),
+								})
+							}
+							className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
+						>
+							{Object.keys(TaskStatus).map((key) => (
+								<option
+									key={key}
+									value={
+										TaskStatus[
+											key as keyof typeof TaskStatus
+										]
+									}
+								>
+									{key}
+								</option>
+							))}
+						</select>
+					</div>
+				) : null}
 				<div
 					className={
 						"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
@@ -95,10 +118,10 @@ const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 				>
 					<input
 						type="text"
-						value={editedTask.assignedTo}
+						value={currentTask.assignedTo}
 						onChange={(e) =>
-							setEditedTask({
-								...editedTask,
+							setCurrentTask({
+								...currentTask,
 								assignedTo: e.target.value,
 							})
 						}
@@ -114,15 +137,15 @@ const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 					<input
 						type="date"
 						value={unixTimestampMillisecondsToIsoString(
-							editedTask.dueDate * 1000n
+							currentTask.dueDate * 1000n
 						)}
 						onChange={(e) => {
 							const selectedDate = new Date(e.target.value);
 							const unixTimestampMilliseconds = BigInt(
 								selectedDate.getTime()
 							);
-							return setEditedTask({
-								...editedTask,
+							return setCurrentTask({
+								...currentTask,
 								dueDate: unixTimestampMilliseconds / 1000n,
 							});
 						}}
@@ -130,33 +153,16 @@ const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 						placeholder="Due Date"
 					/>
 				</div>
-				<div
-					className={
-						"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
-					}
-				>
-					<input
-						type="text"
-						disabled={true}
-						value={editedTask.createdBy}
-						onChange={(e) =>
-							setEditedTask({
-								...editedTask,
-								createdBy: e.target.value,
-							})
-						}
-						className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-						placeholder="Creator"
-					/>
-				</div>
 				<div className="flex justify-end">
 					<button
+						disabled={isLoadingCreate || isMiningCreate}
 						onClick={handleSave}
 						className="btn btn-primary btn-md mr-2"
 					>
 						Save
 					</button>
 					<button
+						disabled={isLoadingCreate || isMiningCreate}
 						onClick={onClose}
 						className="btn btn-secondary btn-md"
 					>

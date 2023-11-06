@@ -28,9 +28,19 @@ contract TimeTaskManager {
 		address createdBy;
 	}
 
+	struct TaskWithId {
+		uint256 id;
+		string title;
+		TaskStatus status;
+		string description;
+		address assignedTo;
+		uint256 dueDate;
+		address createdBy;
+	}
+
 	// State Variables
 	mapping(uint256 => Task) private s_tasks;
-	uint256 private s_taskCount = 0;
+	uint256 private s_lastTaskIndex = 0;
 
 	mapping(address => bool) private s_isLead;
 	mapping(address => bool) private s_isScrum;
@@ -76,8 +86,8 @@ contract TimeTaskManager {
 		}
 
 		for (uint256 i = 0; i < tasks.length; i++) {
-			uint256 taskId = s_taskCount++;
-			s_tasks[taskId] = tasks[i];
+			s_lastTaskIndex++;
+			s_tasks[s_lastTaskIndex] = tasks[i];
 		}
 	}
 
@@ -88,8 +98,8 @@ contract TimeTaskManager {
 		address assignedTo,
 		uint256 dueDate
 	) public onlyLeadOrScrum {
-		uint256 taskId = s_taskCount++;
-		s_tasks[taskId] = Task(
+		s_lastTaskIndex++;
+		s_tasks[s_lastTaskIndex] = Task(
 			title,
 			TaskStatus.TODO,
 			description,
@@ -97,7 +107,7 @@ contract TimeTaskManager {
 			dueDate,
 			msg.sender
 		);
-		emit TaskCreated(taskId);
+		emit TaskCreated(s_lastTaskIndex);
 	}
 
 	function updateTaskStatus(
@@ -130,6 +140,8 @@ contract TimeTaskManager {
 
 	function deleteTask(uint256 taskId) public {
 		Task storage task = s_tasks[taskId];
+		console.log("createdBy", task.createdBy);
+		console.log("sender", msg.sender);
 		require(
 			task.createdBy == msg.sender,
 			"Only the creator can delete the task"
@@ -167,33 +179,45 @@ contract TimeTaskManager {
 	function getPaginatedTasks(
 		uint256 page,
 		uint256 pageSize
-	) public view returns (Task[] memory) {
+	) public view returns (TaskWithId[] memory) {
 		require(page > 0, "Page number must be greater than 0");
 		require(pageSize > 0, "Page size must be greater than 0");
 
 		// Create an array to hold the paginated tasks
-		Task[] memory paginatedTasks = new Task[](pageSize);
+		TaskWithId[] memory paginatedTasks = new TaskWithId[](pageSize);
 
 		// Initialize variables to track the number of tasks found and the current page index
 		uint256 tasksFound = 0;
 		uint256 currentPageIndex = 0;
 
 		// Iterate through tasks in reverse order to find the tasks for the requested page
-		for (int256 i = int256(s_taskCount) - 1; i >= 0; i--) {
+		for (uint256 i = s_lastTaskIndex; i > 0; i--) {
 			if (tasksFound == pageSize) {
 				// If we have found enough tasks for the page, exit the loop
 				break;
 			}
 
 			// Check if the task at index i exists (not deleted)
-			if (bytes(s_tasks[uint256(i)].title).length != 0) {
+			if (bytes(s_tasks[i].title).length != 0) {
 				// This task exists, so add it to the paginatedTasks array
-				paginatedTasks[currentPageIndex] = s_tasks[uint256(i)];
+				paginatedTasks[currentPageIndex] = TaskWithId({
+					id: i,
+					title: s_tasks[i].title,
+					status: s_tasks[i].status,
+					description: s_tasks[i].description,
+					assignedTo: s_tasks[i].assignedTo,
+					dueDate: s_tasks[i].dueDate,
+					createdBy: s_tasks[i].createdBy
+				});
 				tasksFound++;
 				currentPageIndex++;
 			}
 		}
 		return paginatedTasks;
+	}
+
+	function getNewTaskIndex() public view returns (uint256) {
+		return s_lastTaskIndex;
 	}
 
 	function getIsLead(address userAddress) public view returns (bool) {

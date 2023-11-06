@@ -5,7 +5,7 @@ const contracts = {
       name: "localhost",
       contracts: {
         TimeTaskManager: {
-          address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+          address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
           abi: [
             {
               inputs: [
@@ -239,6 +239,19 @@ const contracts = {
               type: "function",
             },
             {
+              inputs: [],
+              name: "getNewTaskIndex",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
               inputs: [
                 {
                   internalType: "uint256",
@@ -255,6 +268,11 @@ const contracts = {
               outputs: [
                 {
                   components: [
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
                     {
                       internalType: "string",
                       name: "title",
@@ -286,7 +304,7 @@ const contracts = {
                       type: "address",
                     },
                   ],
-                  internalType: "struct TimeTaskManager.Task[]",
+                  internalType: "struct TimeTaskManager.TaskWithId[]",
                   name: "",
                   type: "tuple[]",
                 },

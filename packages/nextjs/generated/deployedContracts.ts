@@ -242,11 +242,67 @@ const contracts = {
               inputs: [
                 {
                   internalType: "uint256",
+                  name: "page",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "pageSize",
+                  type: "uint256",
+                },
+              ],
+              name: "getPaginatedTasks",
+              outputs: [
+                {
+                  components: [
+                    {
+                      internalType: "string",
+                      name: "title",
+                      type: "string",
+                    },
+                    {
+                      internalType: "enum TimeTaskManager.TaskStatus",
+                      name: "status",
+                      type: "uint8",
+                    },
+                    {
+                      internalType: "string",
+                      name: "description",
+                      type: "string",
+                    },
+                    {
+                      internalType: "address",
+                      name: "assignedTo",
+                      type: "address",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "dueDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "address",
+                      name: "createdBy",
+                      type: "address",
+                    },
+                  ],
+                  internalType: "struct TimeTaskManager.Task[]",
+                  name: "",
+                  type: "tuple[]",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
                   name: "taskId",
                   type: "uint256",
                 },
               ],
-              name: "readTask",
+              name: "getTask",
               outputs: [
                 {
                   internalType: "string",

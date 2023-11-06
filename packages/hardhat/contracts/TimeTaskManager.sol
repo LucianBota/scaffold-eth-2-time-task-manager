@@ -139,7 +139,7 @@ contract TimeTaskManager {
 	}
 
 	// View / Pure functions
-	function readTask(
+	function getTask(
 		uint256 taskId
 	)
 		public
@@ -162,6 +162,38 @@ contract TimeTaskManager {
 			task.dueDate,
 			task.createdBy
 		);
+	}
+
+	function getPaginatedTasks(
+		uint256 page,
+		uint256 pageSize
+	) public view returns (Task[] memory) {
+		require(page > 0, "Page number must be greater than 0");
+		require(pageSize > 0, "Page size must be greater than 0");
+
+		// Create an array to hold the paginated tasks
+		Task[] memory paginatedTasks = new Task[](pageSize);
+
+		// Initialize variables to track the number of tasks found and the current page index
+		uint256 tasksFound = 0;
+		uint256 currentPageIndex = 0;
+
+		// Iterate through tasks in reverse order to find the tasks for the requested page
+		for (int256 i = int256(s_taskCount) - 1; i >= 0; i--) {
+			if (tasksFound == pageSize) {
+				// If we have found enough tasks for the page, exit the loop
+				break;
+			}
+
+			// Check if the task at index i exists (not deleted)
+			if (bytes(s_tasks[uint256(i)].title).length != 0) {
+				// This task exists, so add it to the paginatedTasks array
+				paginatedTasks[currentPageIndex] = s_tasks[uint256(i)];
+				tasksFound++;
+				currentPageIndex++;
+			}
+		}
+		return paginatedTasks;
 	}
 
 	function getIsLead(address userAddress) public view returns (bool) {

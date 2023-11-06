@@ -3,13 +3,13 @@ import { TaskStatus } from "~~/enums/task";
 import { Task } from "~~/types/timetaskmananger/task";
 import { unixTimestampMillisecondsToIsoString } from "~~/utils/dateTime";
 
-interface EditTaskModalProps {
+interface AddEditTaskModalProps {
 	task: Task;
 	onClose: () => void;
 	onSave: (editedTask: Task) => void;
 }
 
-const EditTaskModal: React.FC<EditTaskModalProps> = ({
+const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 	task,
 	onClose,
 	onSave,
@@ -137,6 +137,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
 				>
 					<input
 						type="text"
+						disabled={true}
 						value={editedTask.createdBy}
 						onChange={(e) =>
 							setEditedTask({
@@ -167,4 +168,4 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
 	);
 };
 
-export default EditTaskModal;
+export default AddEditTaskModal;

@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Task } from "~~/types/timetaskmananger/task";
 import { unixTimestampMillisecondsToIsoString } from "~~/utils/dateTime";
-import EditTaskModal from "./EditTaskModal"; // Import the EditTaskModal component
 import { TaskStatus } from "~~/enums/task";
+import AddEditTaskModal from "./AddEditTaskModal";
 
 interface TaskCardProps {
 	data: Task;
@@ -66,7 +66,7 @@ const TaskCard: React.FC<TaskCardProps> = (props) => {
 			</div>
 			<div className="mb-2">Creator: {props.data.createdBy}</div>
 			{isEditModalOpen && (
-				<EditTaskModal
+				<AddEditTaskModal
 					task={props.data}
 					onClose={handleEditModalClose}
 					onSave={handleEditModalSave}

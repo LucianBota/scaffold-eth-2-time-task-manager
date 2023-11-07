@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import { TaskStatus } from "~~/enums/task";
+import { AccountRole } from "~~/enums/timeTaskManager";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { Task } from "~~/types/timetaskmananger/task";
 import { unixTimestampMillisecondsToIsoString } from "~~/utils/dateTime";
 
 interface AddEditTaskModalProps {
+	accountRole: AccountRole;
 	task: Task;
 	onClose: () => void;
 }
 
 const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
+	accountRole,
 	task,
 	onClose,
 }) => {
@@ -27,6 +29,32 @@ const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 			currentTask.assignedTo,
 			currentTask.dueDate,
 		],
+		blockConfirmations: 1,
+		onBlockConfirmation: (txnReceipt) => {
+			console.log("Transaction blockHash", txnReceipt.blockHash);
+		},
+	});
+	const {
+		writeAsync: writeEditAsync,
+		isLoading: isLoadingEdit,
+		isMining: isMiningEdit,
+	} = useScaffoldContractWrite({
+		contractName: "TimeTaskManager",
+		functionName: "editTask",
+		args: [currentTask.id, currentTask.assignedTo, currentTask.dueDate],
+		blockConfirmations: 1,
+		onBlockConfirmation: (txnReceipt) => {
+			console.log("Transaction blockHash", txnReceipt.blockHash);
+		},
+	});
+	const {
+		writeAsync: writeUpdateStatusAsync,
+		isLoading: isLoadingUpdateStatus,
+		isMining: isMiningUpdateStatus,
+	} = useScaffoldContractWrite({
+		contractName: "TimeTaskManager",
+		functionName: "updateTaskStatus",
+		args: [currentTask.id, currentTask.status],
 		blockConfirmations: 1,
 		onBlockConfirmation: (txnReceipt) => {
 			console.log("Transaction blockHash", txnReceipt.blockHash);
@@ -84,7 +112,7 @@ const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 						</div>
 					</>
 				) : null}
-				{task.id ? (
+				{task.id && accountRole === AccountRole.Dev ? (
 					<div
 						className={
 							"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
@@ -106,48 +134,55 @@ const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 						</select>
 					</div>
 				) : null}
-				<div
-					className={
-						"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
-					}
-				>
-					<input
-						type="text"
-						value={currentTask.assignedTo}
-						onChange={(e) =>
-							setCurrentTask({
-								...currentTask,
-								assignedTo: e.target.value,
-							})
-						}
-						className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-						placeholder="Assigned to"
-					/>
-				</div>
-				<div
-					className={
-						"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
-					}
-				>
-					<input
-						type="date"
-						value={unixTimestampMillisecondsToIsoString(
-							currentTask.dueDate * 1000n
-						)}
-						onChange={(e) => {
-							const selectedDate = new Date(e.target.value);
-							const unixTimestampMilliseconds = BigInt(
-								selectedDate.getTime()
-							);
-							return setCurrentTask({
-								...currentTask,
-								dueDate: unixTimestampMilliseconds / 1000n,
-							});
-						}}
-						className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-						placeholder="Due Date"
-					/>
-				</div>
+				{accountRole === AccountRole.LeadOrScrum ? (
+					<>
+						<div
+							className={
+								"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
+							}
+						>
+							<input
+								type="text"
+								value={currentTask.assignedTo}
+								onChange={(e) =>
+									setCurrentTask({
+										...currentTask,
+										assignedTo: e.target.value,
+									})
+								}
+								className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
+								placeholder="Assigned to"
+							/>
+						</div>
+						<div
+							className={
+								"flex border-2 border-base-300 bg-base-200 rounded-md text-accent mb-2"
+							}
+						>
+							<input
+								type="date"
+								value={unixTimestampMillisecondsToIsoString(
+									currentTask.dueDate * 1000n
+								)}
+								onChange={(e) => {
+									const selectedDate = new Date(
+										e.target.value
+									);
+									const unixTimestampMilliseconds = BigInt(
+										selectedDate.getTime()
+									);
+									return setCurrentTask({
+										...currentTask,
+										dueDate:
+											unixTimestampMilliseconds / 1000n,
+									});
+								}}
+								className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
+								placeholder="Due Date"
+							/>
+						</div>
+					</>
+				) : null}
 				<div className="flex justify-end">
 					<button
 						disabled={isLoadingCreate || isMiningCreate}

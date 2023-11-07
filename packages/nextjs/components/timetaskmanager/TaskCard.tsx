@@ -2,16 +2,17 @@ import React, { useState } from "react";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Task } from "~~/types/timetaskmananger/task";
 import { unixTimestampMillisecondsToIsoString } from "~~/utils/dateTime";
-import { TaskStatus } from "~~/enums/task";
+import { AccountRole, TaskStatus } from "~~/enums/timeTaskManager";
 import { useAccount } from "wagmi";
 import AddEditTaskModal from "./AddEditTaskModal";
 import DeleteTaskModal from "./DeleteTaskModal";
 
 interface TaskCardProps {
+	accountRole: AccountRole;
 	task: Task;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ accountRole, task }) => {
 	const [isEditModalOpen, setEditModalOpen] = useState<boolean>(false);
 	const [isDeleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
 
@@ -40,12 +41,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
 					{task.title}
 				</div>
 				<div className="flex">
-					<button
-						className="text-base-content hover:text-secondary"
-						onClick={handleEditClick}
-					>
-						<PencilIcon className="w-5 h-5" />
-					</button>
+					{accountRole ? (
+						<button
+							className="text-base-content hover:text-secondary"
+							onClick={handleEditClick}
+						>
+							<PencilIcon className="w-5 h-5" />
+						</button>
+					) : null}
 					{task.createdBy === address ? (
 						<button
 							className="text-base-content hover:text-secondary ml-4"
@@ -72,7 +75,11 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
 			</div>
 			<div className="mb-2 truncate">Creator: {task.createdBy}</div>
 			{isEditModalOpen && (
-				<AddEditTaskModal task={task} onClose={handleEditModalClose} />
+				<AddEditTaskModal
+					accountRole={accountRole}
+					task={task}
+					onClose={handleEditModalClose}
+				/>
 			)}
 			{isDeleteModalOpen && (
 				<DeleteTaskModal

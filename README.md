@@ -1,37 +1,32 @@
-# 🏗 Scaffold-ETH 2
+# 🏗 Time Task Manager
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+🧪 Task management application developed for the Ethereum blockchain.
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+⚙️ Built using Scaffold-eth2, Solidity, Smart Contracts, Hardhat, Ethers.js, JavaScript, TypeScript, and React.js and Next.js.
 
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, and Typescript.
+-   ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
+-   🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
+-   🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
-
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/1171422a-0ce4-4203-bcd4-d2d1941d198b)
+![Time Task Manager Preview](https://raw.githubusercontent.com/LucianBota/scaffold-eth-2-time-task-manager/main/assets/time-task-manager-preview.png)
 
 ## Requirements
 
 Before you begin, you need to install the following tools:
 
-- [Node (v18 LTS)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+-   [Node (v18 LTS)](https://nodejs.org/en/download/)
+-   Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
+-   [Git](https://git-scm.com/downloads)
 
 ## Quickstart
 
-To get started with Scaffold-ETH 2, follow the steps below:
+To get started with the Time Task Manager, follow the steps below:
 
 1. Clone this repo & install dependencies
 
 ```
-git clone https://github.com/scaffold-eth/scaffold-eth-2.git
-cd scaffold-eth-2
+git clone https://github.com/LucianBota/scaffold-eth-2-time-task-manager.git
+cd scaffold-eth-2-time-task-manager
 yarn install
 ```
 
@@ -57,15 +52,15 @@ This command deploys a test smart contract to the local network. The contract is
 yarn start
 ```
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the contract component or the example ui in the frontend. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
 
 Run smart contract test with `yarn hardhat:test`
 
-- Edit your smart contract `YourContract.sol` in `packages/hardhat/contracts`
-- Edit your frontend in `packages/nextjs/pages`
-- Edit your deployment scripts in `packages/hardhat/deploy`
+-   Edit your smart contract `TimeTaskManager.sol` in `packages/hardhat/contracts`
+-   Edit your frontend in `packages/nextjs/pages`
+-   Edit your deployment scripts in `packages/hardhat/deploy`
 
-## Documentation
+## Scaffold-ETH 2 Documentation
 
 Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
 

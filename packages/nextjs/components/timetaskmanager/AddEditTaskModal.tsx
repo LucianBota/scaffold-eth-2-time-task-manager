@@ -62,7 +62,13 @@ const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 	});
 
 	const handleSave = async () => {
-		await writeCreateAsync();
+		if (!task.id) {
+			await writeCreateAsync();
+		} else if (accountRole === AccountRole.LeadOrScrum) {
+			await writeEditAsync();
+		} else if (accountRole === AccountRole.Dev) {
+			await writeUpdateStatusAsync();
+		}
 		onClose();
 	};
 
@@ -185,14 +191,28 @@ const AddEditTaskModal: React.FC<AddEditTaskModalProps> = ({
 				) : null}
 				<div className="flex justify-end">
 					<button
-						disabled={isLoadingCreate || isMiningCreate}
+						disabled={
+							isLoadingCreate ||
+							isMiningCreate ||
+							isLoadingEdit ||
+							isMiningEdit ||
+							isLoadingUpdateStatus ||
+							isMiningUpdateStatus
+						}
 						onClick={handleSave}
 						className="btn btn-primary btn-md mr-2"
 					>
 						Save
 					</button>
 					<button
-						disabled={isLoadingCreate || isMiningCreate}
+						disabled={
+							isLoadingCreate ||
+							isMiningCreate ||
+							isLoadingEdit ||
+							isMiningEdit ||
+							isLoadingUpdateStatus ||
+							isMiningUpdateStatus
+						}
 						onClick={onClose}
 						className="btn btn-secondary btn-md"
 					>

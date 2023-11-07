@@ -3,6 +3,7 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Task } from "~~/types/timetaskmananger/task";
 import { unixTimestampMillisecondsToIsoString } from "~~/utils/dateTime";
 import { TaskStatus } from "~~/enums/task";
+import { useAccount } from "wagmi";
 import AddEditTaskModal from "./AddEditTaskModal";
 import DeleteTaskModal from "./DeleteTaskModal";
 
@@ -13,6 +14,8 @@ interface TaskCardProps {
 const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
 	const [isEditModalOpen, setEditModalOpen] = useState<boolean>(false);
 	const [isDeleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+
+	const { address } = useAccount();
 
 	const handleEditClick = () => {
 		setEditModalOpen(true);
@@ -38,17 +41,19 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
 				</div>
 				<div className="flex">
 					<button
-						className="text-base-content hover:text-secondary mr-4"
+						className="text-base-content hover:text-secondary"
 						onClick={handleEditClick}
 					>
 						<PencilIcon className="w-5 h-5" />
 					</button>
-					<button
-						className="text-base-content hover:text-secondary"
-						onClick={handleDeleteClick}
-					>
-						<TrashIcon className="w-5 h-5" />
-					</button>
+					{task.createdBy === address ? (
+						<button
+							className="text-base-content hover:text-secondary ml-4"
+							onClick={handleDeleteClick}
+						>
+							<TrashIcon className="w-5 h-5" />
+						</button>
+					) : null}
 				</div>
 			</div>
 			<div className="mb-2">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 
 import TaskCard from "./TaskCard";
 import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
@@ -31,7 +31,7 @@ const TaskList = () => {
 			<div className="flex justify-center mb-10">
 				<button
 					onClick={handleAddClick}
-					className="btn btn-secondary btn-md mr-2"
+					className="btn btn-accent btn-md mr-2"
 				>
 					ADD TASK +
 				</button>
